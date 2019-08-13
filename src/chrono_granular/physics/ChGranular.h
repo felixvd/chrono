@@ -312,12 +312,12 @@ class CH_GRANULAR_API ChSystemGranularSMC {
     bool disable_BC_by_ID(size_t BC_id) {
         size_t max_id = BC_params_list_SU.size();
         if (BC_id >= max_id) {
-            printf("ERROR: Trying to disable invalid BC ID %lu\n", BC_id);
+            printf("ERROR: Trying to disable invalid BC ID %zu\n", BC_id);
             return false;
         }
 
         if (BC_id <= NUM_RESERVED_BC_IDS - 1) {
-            printf("ERROR: Trying to modify reserved BC ID %lu\n", BC_id);
+            printf("ERROR: Trying to modify reserved BC ID %zu\n", BC_id);
             return false;
         }
         BC_params_list_UU.at(BC_id).active = false;
@@ -329,11 +329,11 @@ class CH_GRANULAR_API ChSystemGranularSMC {
     bool enable_BC_by_ID(size_t BC_id) {
         size_t max_id = BC_params_list_SU.size();
         if (BC_id >= max_id) {
-            printf("ERROR: Trying to enable invalid BC ID %lu\n", BC_id);
+            printf("ERROR: Trying to enable invalid BC ID %zu\n", BC_id);
             return false;
         }
         if (BC_id <= NUM_RESERVED_BC_IDS - 1) {
-            printf("ERROR: Trying to modify reserved BC ID %lu\n", BC_id);
+            printf("ERROR: Trying to modify reserved BC ID %zu\n", BC_id);
             return false;
         }
         BC_params_list_UU.at(BC_id).active = true;
@@ -345,11 +345,11 @@ class CH_GRANULAR_API ChSystemGranularSMC {
     bool set_BC_offset_function(size_t BC_id, const GranPositionFunction& offset_function) {
         size_t max_id = BC_params_list_SU.size();
         if (BC_id >= max_id) {
-            printf("ERROR: Trying to set offset function for invalid BC ID %lu\n", BC_id);
+            printf("ERROR: Trying to set offset function for invalid BC ID %zu\n", BC_id);
             return false;
         }
         if (BC_id <= NUM_RESERVED_BC_IDS - 1) {
-            printf("ERROR: Trying to modify reserved BC ID %lu\n", BC_id);
+            printf("ERROR: Trying to modify reserved BC ID %zu\n", BC_id);
             return false;
         }
         BC_offset_function_list.at(BC_id) = offset_function;
@@ -362,19 +362,19 @@ class CH_GRANULAR_API ChSystemGranularSMC {
     bool getBCReactionForces(size_t BC_id, float forces[3]) const {
         size_t max_id = BC_params_list_SU.size();
         if (BC_id >= max_id) {
-            printf("ERROR: Trying to get forces for invalid BC ID %lu\n", BC_id);
+            printf("ERROR: Trying to get forces for invalid BC ID %zu\n", BC_id);
             return false;
         }
         if (BC_id <= NUM_RESERVED_BC_IDS - 1) {
-            printf("ERROR: Trying to modify reserved BC ID %lu\n", BC_id);
+            printf("ERROR: Trying to modify reserved BC ID %zu\n", BC_id);
             return false;
         }
         if (BC_params_list_SU.at(BC_id).track_forces == false) {
-            printf("ERROR: Trying to get forces for non-force-tracking BC ID %lu\n", BC_id);
+            printf("ERROR: Trying to get forces for non-force-tracking BC ID %zu\n", BC_id);
             return false;
         }
         if (BC_params_list_SU.at(BC_id).active == false) {
-            printf("ERROR: Trying to get forces for inactive BC ID %lu\n", BC_id);
+            printf("ERROR: Trying to get forces for inactive BC ID %zu\n", BC_id);
             return false;
         }
         float3 reaction_forces = BC_params_list_SU.at(BC_id).reaction_forces;
