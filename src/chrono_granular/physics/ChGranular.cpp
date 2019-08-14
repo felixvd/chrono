@@ -744,7 +744,7 @@ void ChSystemGranularSMC::initialize() {
 }
 
 // Set particle positions in UU
-void ChSystemGranularSMC::setParticlePositions(const std::vector<ChVector<float>>& points) {
+void ChSystemGranularSMC::setParticlePositions(const std::vector<float3>& points) {
     user_sphere_positions = points;  // Copy points to class vector
 }
 

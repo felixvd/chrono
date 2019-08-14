@@ -20,13 +20,13 @@
 #include <vector>
 #include <algorithm>
 // make windows behave with math
+#ifdef _WINDOWS
 #define _USE_MATH_DEFINES
+#endif
 #include <cmath>
 #include "chrono_granular/ChApiGranular.h"
-#include "chrono/core/ChVector.h"
 #include "chrono_granular/ChGranularDefines.h"
 #include "chrono_granular/physics/ChGranularBoundaryConditions.h"
-#include "chrono/core/ChMathematics.h"
 #include "cudalloc.hpp"
 
 typedef unsigned char not_stupid_bool;
@@ -462,7 +462,7 @@ class CH_GRANULAR_API ChSystemGranularSMC {
     void set_BD_Fixed(bool fixed) { BD_is_fixed = fixed; }
 
     /// Set initial particle positions. MUST be called only once and MUST be called before initialize
-    void setParticlePositions(const std::vector<ChVector<float>>& points);
+    void setParticlePositions(const std::vector<float3>& points);
 
     /// Set particle fixity. MUST be called only once and MUST be called before initialize
     void setParticleFixed(const std::vector<bool>& fixed);
@@ -752,7 +752,7 @@ class CH_GRANULAR_API ChSystemGranularSMC {
     const float box_size_Z;
 
     /// User-provided sphere positions in UU
-    std::vector<ChVector<float>> user_sphere_positions;
+    std::vector<float3> user_sphere_positions;
 
     /// User-provided sphere fixity as bools
     std::vector<bool> user_sphere_fixed;
