@@ -14,6 +14,7 @@
 
 #pragma once
 #include <cmath>
+#include "chrono_granular/utils/ChCudaMathUtils.cuh"
 
 #define MIN(a, b) ((a < b) ? a : b)
 #define MAX(a, b) ((a > b) ? a : b)
