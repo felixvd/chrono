@@ -24,7 +24,8 @@
 #define _USE_MATH_DEFINES
 #endif
 #include <cmath>
-#include "chrono_granular/ChApiGranular.h"
+#include "chrono_granular/api/ChApiGranular.h"
+#include "chrono_granular/api/ChApiGranular.h"
 #include "chrono_granular/ChGranularDefines.h"
 #include "chrono_granular/physics/ChGranularBoundaryConditions.h"
 #include "cudalloc.hpp"
@@ -120,6 +121,7 @@ enum GRAN_VERBOSITY { QUIET = 0, INFO = 1, METRICS = 2 };
 
 /// Output mode of system
 enum GRAN_OUTPUT_MODE { CSV, BINARY, HDF5, NONE };
+
 /// How are we integrating through time
 enum GRAN_TIME_INTEGRATOR { FORWARD_EULER, CHUNG, CENTERED_DIFFERENCE, EXTENDED_TAYLOR };
 

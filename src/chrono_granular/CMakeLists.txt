@@ -156,8 +156,6 @@ source_group(utilities FILES ${ChronoEngine_Granular_UTILITIES})
 
 set(ChronoEngine_Granular_API
 		api/ChApiGranular.h
-		api/ChApiGranularModelSetup.h
-		api/ChApiGranularModelSetup.cpp
 		api/ChApiGranularChrono.h
 		api/ChApiGranularChrono.cpp
 		)
