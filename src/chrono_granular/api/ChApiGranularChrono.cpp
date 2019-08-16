@@ -162,7 +162,16 @@ void ChGranularChronoTriMeshAPI::setupTriMesh(const std::vector<chrono::geometry
 }
 
 void ChGranularSMC_API::setElemsPositions(const std::vector<chrono::ChVector<float>>& points) {
+	//DN: this needs an implementation
     std::vector<float3> pointsFloat3;
     pSMCgranSystem->setParticlePositions(pointsFloat3);
 }
+
+    // Set particle positions in UU
+void ChGranularChronoTriMeshAPI::setElemsPositions(const std::vector<chrono::ChVector<float>>& points) {
+    // DN: this needs an implementation
+    std::vector<float3> pointsFloat3;
+    pGranSystemSMC_TriMesh->setParticlePositions(pointsFloat3);
+}
+
 

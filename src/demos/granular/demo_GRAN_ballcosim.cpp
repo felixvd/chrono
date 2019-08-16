@@ -29,6 +29,7 @@
 #include "chrono_granular/physics/ChGranular.h"
 #include "chrono_granular/physics/ChGranularTriMesh.h"
 #include "chrono/utils/ChUtilsCreators.h"
+#include "chrono_granular/api/ChApiGranularChrono.h"
 
 #include "chrono_granular/utils/ChGranularJsonParser.h"
 
@@ -87,6 +88,11 @@ int main(int argc, char* argv[]) {
     ChSystemGranularSMC_trimesh gran_sys(params.sphere_radius, params.sphere_density,
                                          make_float3(params.box_X, params.box_Y, params.box_Z));
 
+	// to do: don't expose the guts of granular at this level; work through an API
+    // but for now get it going like this
+    ChGranularChronoTriMeshAPI apiSMC_TriMesh;
+    apiSMC_TriMesh.setGranSystemSMC_TriMesh(&gran_sys);
+
     double fill_bottom = -params.box_Z / 2.0;
     double fill_top = params.box_Z / 4.0;
 
@@ -107,7 +113,7 @@ int main(int argc, char* argv[]) {
         center.z() += 2.05 * params.sphere_radius;
     }
 
-    gran_sys.setParticlePositions(body_points);
+    apiSMC_TriMesh.setElemsPositions(body_points);
 
     gran_sys.set_BD_Fixed(true);
     std::function<double3(float)> pos_func_wave = [&params](float t) {
@@ -167,7 +173,7 @@ int main(int argc, char* argv[]) {
     vector<bool> mesh_inflated(1, false);
     vector<float> mesh_inflation_radii(1, 0);
 
-    gran_sys.load_meshes(mesh_filenames, mesh_rotscales, mesh_translations, mesh_masses, mesh_inflated,
+    apiSMC_TriMesh.load_meshes(mesh_filenames, mesh_rotscales, mesh_translations, mesh_masses, mesh_inflated,
                          mesh_inflation_radii);
 
     gran_sys.setOutputMode(params.write_mode);

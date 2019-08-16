@@ -27,11 +27,14 @@
 
 class CH_GRANULAR_API ChGranularChronoTriMeshAPI {
   public:
+    ChGranularChronoTriMeshAPI() : pGranSystemSMC_TriMesh(NULL) {}
     enum MESH_VERBOSITY { QUIET = 0, INFO = 1 };
 
   private:
     MESH_VERBOSITY mesh_verbosity;
     /// Clean copy of mesh soup interacting with granular material in unified memory. Stored in UU
+    chrono::granular::ChSystemGranularSMC_trimesh* pGranSystemSMC_TriMesh;
+
     chrono::granular::ChTriangleSoup<float3>* meshSoup;
     chrono::granular::ChGranParams_trimesh* tri_params;
 
@@ -51,9 +54,14 @@ class CH_GRANULAR_API ChGranularChronoTriMeshAPI {
                      std::vector<bool> inflated,
                      std::vector<float> inflation_radii);
 
-    /// Verbosity level of the system
+    void setGranSystemSMC_TriMesh(chrono::granular::ChSystemGranularSMC_trimesh* granSystemTriMesh) {
+        pGranSystemSMC_TriMesh = granSystemTriMesh;
+    }
 
-    /// Set simualtion verbosity -- used to check on very large, slow simulations or debug
+    // Set particle positions in UU
+    void setElemsPositions(const std::vector<chrono::ChVector<float>>& points);
+
+	/// Set simualtion verbosity -- used to check on very large, slow simulations or debug
     void setVerbosity(MESH_VERBOSITY level) { mesh_verbosity = level; }
 };
 
