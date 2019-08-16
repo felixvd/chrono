@@ -25,6 +25,17 @@
         printf(__VA_ARGS__);      \
     }
 
+inline void convertChVector2Float3Vec(const const std::vector<chrono::ChVector<float>>& points,
+                                      std::vector<float3>& pointsFloat3) {
+    size_t nPoints = points.size();
+    pointsFloat3.resize(nPoints);
+    for (size_t index = 0; index < nPoints; index++) {
+        pointsFloat3.at(index).x = points.at(index)[0];
+        pointsFloat3.at(index).y = points.at(index)[1];
+        pointsFloat3.at(index).z = points.at(index)[2];
+    }
+}
+
 class CH_GRANULAR_API ChGranularChronoTriMeshAPI {
   public:
     ChGranularChronoTriMeshAPI() : pGranSystemSMC_TriMesh(NULL) {}
@@ -61,7 +72,7 @@ class CH_GRANULAR_API ChGranularChronoTriMeshAPI {
     // Set particle positions in UU
     void setElemsPositions(const std::vector<chrono::ChVector<float>>& points);
 
-	/// Set simualtion verbosity -- used to check on very large, slow simulations or debug
+    /// Set simualtion verbosity -- used to check on very large, slow simulations or debug
     void setVerbosity(MESH_VERBOSITY level) { mesh_verbosity = level; }
 };
 
