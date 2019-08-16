@@ -25,7 +25,7 @@
         printf(__VA_ARGS__);      \
     }
 
-inline void convertChVector2Float3Vec(const const std::vector<chrono::ChVector<float>>& points,
+inline void convertChVector2Float3Vec(const std::vector<chrono::ChVector<float>>& points,
                                       std::vector<float3>& pointsFloat3) {
     size_t nPoints = points.size();
     pointsFloat3.resize(nPoints);
