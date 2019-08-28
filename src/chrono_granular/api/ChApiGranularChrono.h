@@ -38,18 +38,15 @@ inline void convertChVector2Float3Vec(const std::vector<chrono::ChVector<float>>
 
 class CH_GRANULAR_API ChGranularChronoTriMeshAPI {
   public:
-    ChGranularChronoTriMeshAPI() : pGranSystemSMC_TriMesh(NULL) {}
+    ChGranularChronoTriMeshAPI(float sphere_rad, float density, float3 boxDims);
     enum MESH_VERBOSITY { QUIET = 0, INFO = 1 };
+    ~ChGranularChronoTriMeshAPI() { delete pGranSystemSMC_TriMesh; }
 
   private:
     MESH_VERBOSITY mesh_verbosity;
     /// Clean copy of mesh soup interacting with granular material in unified memory. Stored in UU
     chrono::granular::ChSystemGranularSMC_trimesh* pGranSystemSMC_TriMesh;
 
-    chrono::granular::ChTriangleSoup<float3>* meshSoup;
-    chrono::granular::ChGranParams_trimesh* tri_params;
-
-  public:
     /// Setup data structures associated with triangle mesh
     void setupTriMesh(const std::vector<chrono::geometry::ChTriangleMeshConnected>& all_meshes,
                       unsigned int nTriangles,
@@ -57,6 +54,7 @@ class CH_GRANULAR_API ChGranularChronoTriMeshAPI {
                       std::vector<bool> inflated,
                       std::vector<float> inflation_radii);
 
+  public:
     /// Load triangle meshes into granular system. MUST happen before initialize is called
     void load_meshes(std::vector<std::string> objfilenames,
                      std::vector<chrono::ChMatrix33<float>> rotscale,
@@ -65,9 +63,7 @@ class CH_GRANULAR_API ChGranularChronoTriMeshAPI {
                      std::vector<bool> inflated,
                      std::vector<float> inflation_radii);
 
-    void setGranSystemSMC_TriMesh(chrono::granular::ChSystemGranularSMC_trimesh* granSystemTriMesh) {
-        pGranSystemSMC_TriMesh = granSystemTriMesh;
-    }
+    chrono::granular::ChSystemGranularSMC_trimesh& getGranSystemSMC_TriMesh() { return *pGranSystemSMC_TriMesh; }
 
     // Set particle positions in UU
     void setElemsPositions(const std::vector<chrono::ChVector<float>>& points);

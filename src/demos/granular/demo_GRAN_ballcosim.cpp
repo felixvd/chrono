@@ -84,15 +84,12 @@ int main(int argc, char* argv[]) {
 
     double iteration_step = params.step_size;
 
-    // Setup granular simulation
-    ChSystemGranularSMC_trimesh gran_sys(params.sphere_radius, params.sphere_density,
-                                         make_float3(params.box_X, params.box_Y, params.box_Z));
-
 	// to do: don't expose the guts of granular at this level; work through an API
     // but for now get it going like this
-    ChGranularChronoTriMeshAPI apiSMC_TriMesh;
-    apiSMC_TriMesh.setGranSystemSMC_TriMesh(&gran_sys);
+    ChGranularChronoTriMeshAPI apiSMC_TriMesh(params.sphere_radius, params.sphere_density,
+                                              make_float3(params.box_X, params.box_Y, params.box_Z));
 
+	ChSystemGranularSMC_trimesh& gran_sys = apiSMC_TriMesh.getGranSystemSMC_TriMesh();
     double fill_bottom = -params.box_Z / 2.0;
     double fill_top = params.box_Z / 4.0;
 
@@ -158,7 +155,7 @@ int main(int argc, char* argv[]) {
     gran_sys.set_static_friction_coeff_SPH2WALL(params.static_friction_coeffS2W);
     gran_sys.set_static_friction_coeff_SPH2MESH(params.static_friction_coeffS2M);
 
-    string mesh_filename("data/granular/ballcosim/sphere.obj");
+    string mesh_filename("sphere.obj");
     vector<string> mesh_filenames(1, mesh_filename);
 
     vector<float3> mesh_translations(1, make_float3(0, 0, 0));

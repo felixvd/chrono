@@ -151,6 +151,9 @@ class CH_GRANULAR_API ChSystemGranularSMC_trimesh : public ChSystemGranularSMC {
     /// Disable mesh contact
     void disableMeshCollision() { mesh_collision_enabled = false; }
 
+	ChTriangleSoup<float3>* getMeshSoup() { return meshSoup; }
+    ChGranParams_trimesh* getTriParams() { return tri_params; }
+
   protected:
     /// Create a helper to do triangle initialization
     virtual void initializeTriangles();

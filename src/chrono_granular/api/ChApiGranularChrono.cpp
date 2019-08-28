@@ -17,6 +17,10 @@
 #include "chrono_granular/utils/ChGranularUtilities.h"
 #include "chrono_granular/physics/ChGranularTriMesh.h"
 
+ChGranularChronoTriMeshAPI::ChGranularChronoTriMeshAPI(float sphere_rad, float density, float3 boxDims) {
+    pGranSystemSMC_TriMesh = new chrono::granular::ChSystemGranularSMC_trimesh(sphere_rad, density, boxDims);
+}
+
 void ChGranularChronoTriMeshAPI::load_meshes(std::vector<std::string> objfilenames,
                                              std::vector<chrono::ChMatrix33<float>> rotscale,
                                              std::vector<float3> translations,
@@ -73,16 +77,18 @@ void ChGranularChronoTriMeshAPI::setupTriMesh(const std::vector<chrono::geometry
                                               std::vector<float> masses,
                                               std::vector<bool> inflated,
                                               std::vector<float> inflation_radii) {
-    meshSoup->nTrianglesInSoup = nTriangles;
+	
+	chrono::granular::ChTriangleSoup<float3>* pMeshSoup = pGranSystemSMC_TriMesh->getMeshSoup();
+    pMeshSoup->nTrianglesInSoup = nTriangles;
 
     if (nTriangles != 0) {
         // Allocate all of the requisite pointers
         gpuErrchk(
-            cudaMallocManaged(&meshSoup->triangleFamily_ID, nTriangles * sizeof(unsigned int), cudaMemAttachGlobal));
+            cudaMallocManaged(&pMeshSoup->triangleFamily_ID, nTriangles * sizeof(unsigned int), cudaMemAttachGlobal));
 
-        gpuErrchk(cudaMallocManaged(&meshSoup->node1, nTriangles * sizeof(float3), cudaMemAttachGlobal));
-        gpuErrchk(cudaMallocManaged(&meshSoup->node2, nTriangles * sizeof(float3), cudaMemAttachGlobal));
-        gpuErrchk(cudaMallocManaged(&meshSoup->node3, nTriangles * sizeof(float3), cudaMemAttachGlobal));
+        gpuErrchk(cudaMallocManaged(&pMeshSoup->node1, nTriangles * sizeof(float3), cudaMemAttachGlobal));
+        gpuErrchk(cudaMallocManaged(&pMeshSoup->node2, nTriangles * sizeof(float3), cudaMemAttachGlobal));
+        gpuErrchk(cudaMallocManaged(&pMeshSoup->node3, nTriangles * sizeof(float3), cudaMemAttachGlobal));
     }
 
     MESH_INFO_PRINTF("Done allocating nodes for %d triangles\n", nTriangles);
@@ -96,11 +102,11 @@ void ChGranularChronoTriMeshAPI::setupTriMesh(const std::vector<chrono::geometry
         for (int i = 0; i < n_triangles_mesh; i++) {
             chrono::geometry::ChTriangle tri = mesh.getTriangle(i);
 
-            meshSoup->node1[tri_i] = make_float3(tri.p1.x(), tri.p1.y(), tri.p1.z());
-            meshSoup->node2[tri_i] = make_float3(tri.p2.x(), tri.p2.y(), tri.p2.z());
-            meshSoup->node3[tri_i] = make_float3(tri.p3.x(), tri.p3.y(), tri.p3.z());
+            pMeshSoup->node1[tri_i] = make_float3(tri.p1.x(), tri.p1.y(), tri.p1.z());
+            pMeshSoup->node2[tri_i] = make_float3(tri.p2.x(), tri.p2.y(), tri.p2.z());
+            pMeshSoup->node3[tri_i] = make_float3(tri.p3.x(), tri.p3.y(), tri.p3.z());
 
-            meshSoup->triangleFamily_ID[tri_i] = family;
+            pMeshSoup->triangleFamily_ID[tri_i] = family;
 
             // Normal of a single vertex... Should still work
             int normal_i = mesh.m_face_n_indices.at(i).x();  // normals at each vertex of this triangle
@@ -114,7 +120,7 @@ void ChGranularChronoTriMeshAPI::setupTriMesh(const std::vector<chrono::geometry
 
             // If the normal created by a RHR traversal is not correct, switch two vertices
             if (cross.Dot(normal) < 0) {
-                std::swap(meshSoup->node2[tri_i], meshSoup->node3[tri_i]);
+                std::swap(pMeshSoup->node2[tri_i], pMeshSoup->node3[tri_i]);
             }
             tri_i++;
         }
@@ -122,41 +128,41 @@ void ChGranularChronoTriMeshAPI::setupTriMesh(const std::vector<chrono::geometry
         MESH_INFO_PRINTF("Done writing family %d\n", family);
     }
 
-    meshSoup->numTriangleFamilies = family;
+    pMeshSoup->numTriangleFamilies = family;
 
-    if (meshSoup->nTrianglesInSoup != 0) {
-        gpuErrchk(cudaMallocManaged(&meshSoup->familyMass_SU, family * sizeof(float), cudaMemAttachGlobal));
-        gpuErrchk(cudaMallocManaged(&meshSoup->inflated, family * sizeof(float), cudaMemAttachGlobal));
-        gpuErrchk(cudaMallocManaged(&meshSoup->inflation_radii, family * sizeof(float), cudaMemAttachGlobal));
+    if (pMeshSoup->nTrianglesInSoup != 0) {
+        gpuErrchk(cudaMallocManaged(&pMeshSoup->familyMass_SU, family * sizeof(float), cudaMemAttachGlobal));
+        gpuErrchk(cudaMallocManaged(&pMeshSoup->inflated, family * sizeof(float), cudaMemAttachGlobal));
+        gpuErrchk(cudaMallocManaged(&pMeshSoup->inflation_radii, family * sizeof(float), cudaMemAttachGlobal));
 
         for (unsigned int i = 0; i < family; i++) {
             // NOTE The SU conversion is done in initialize after the scaling is determined
-            meshSoup->familyMass_SU[i] = masses[i];
-            meshSoup->inflated[i] = inflated[i];
-            meshSoup->inflation_radii[i] = inflation_radii[i];
+            pMeshSoup->familyMass_SU[i] = masses[i];
+            pMeshSoup->inflated[i] = inflated[i];
+            pMeshSoup->inflation_radii[i] = inflation_radii[i];
         }
 
-        gpuErrchk(cudaMallocManaged(&meshSoup->generalizedForcesPerFamily,
-                                    6 * meshSoup->numTriangleFamilies * sizeof(float), cudaMemAttachGlobal));
+        gpuErrchk(cudaMallocManaged(&pMeshSoup->generalizedForcesPerFamily,
+                                    6 * pMeshSoup->numTriangleFamilies * sizeof(float), cudaMemAttachGlobal));
         // Allocate memory for the float and double frames
         gpuErrchk(
-            cudaMallocManaged(&tri_params->fam_frame_broad,
-                              meshSoup->numTriangleFamilies * sizeof(chrono::granular::ChGranMeshFamilyFrame<float>),
+            cudaMallocManaged(&pGranSystemSMC_TriMesh->getTriParams()->fam_frame_broad,
+                              pMeshSoup->numTriangleFamilies * sizeof(chrono::granular::ChGranMeshFamilyFrame<float>),
                               cudaMemAttachGlobal));
         gpuErrchk(
-            cudaMallocManaged(&tri_params->fam_frame_narrow,
-                              meshSoup->numTriangleFamilies * sizeof(chrono::granular::ChGranMeshFamilyFrame<double>),
+            cudaMallocManaged(&pGranSystemSMC_TriMesh->getTriParams()->fam_frame_narrow,
+                              pMeshSoup->numTriangleFamilies * sizeof(chrono::granular::ChGranMeshFamilyFrame<double>),
                               cudaMemAttachGlobal));
 
         // Allocate memory for linear and angular velocity
         gpuErrchk(
-            cudaMallocManaged(&meshSoup->vel, meshSoup->numTriangleFamilies * sizeof(float3), cudaMemAttachGlobal));
+            cudaMallocManaged(&pMeshSoup->vel, pMeshSoup->numTriangleFamilies * sizeof(float3), cudaMemAttachGlobal));
         gpuErrchk(
-            cudaMallocManaged(&meshSoup->omega, meshSoup->numTriangleFamilies * sizeof(float3), cudaMemAttachGlobal));
+            cudaMallocManaged(&pMeshSoup->omega, pMeshSoup->numTriangleFamilies * sizeof(float3), cudaMemAttachGlobal));
 
         for (unsigned int i = 0; i < family; i++) {
-            meshSoup->vel[i] = make_float3(0, 0, 0);
-            meshSoup->omega[i] = make_float3(0, 0, 0);
+            pMeshSoup->vel[i] = make_float3(0, 0, 0);
+            pMeshSoup->omega[i] = make_float3(0, 0, 0);
         }
     }
 }
