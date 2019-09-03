@@ -4,6 +4,7 @@ Install PyChrono {#pychrono_installation}
 There are two options for installing PyChrono on your computer, A) or B). 
 The first is the reccommended way. The second is for users that need to build the full library starting from the C++ source.
 
+For visualization, you may have to install Irrlicht by running `sudo apt install libirrlicht-dev` or following [these instructions](@ref tutorial_install_irrlicht).
 
 ## A) Install precompiled Python modules
 
