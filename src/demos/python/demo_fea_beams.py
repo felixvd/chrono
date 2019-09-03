@@ -119,9 +119,9 @@ builder.BuildBeam(my_mesh,                   # the mesh where to put the created
                     chrono.ChVectorD(0, 1, 0))      # the 'Y' up direction of the section for the beam
 
 ## After having used BuildBeam(), you can retrieve the nodes used for the beam,
-## For example say you want to fix the A end and apply a force to the B end:
-builder.GetLastBeamNodes().back().SetFixed(True)
+## For example say you want to apply a force to the A end and fix the B end:
 builder.GetLastBeamNodes().front().SetForce(chrono.ChVectorD(0, -1, 0))
+builder.GetLastBeamNodes().back().SetFixed(True)
 
 # Again, use BuildBeam for creating another beam, this time
 # it uses one node (the last node created by the last beam) and one point:
