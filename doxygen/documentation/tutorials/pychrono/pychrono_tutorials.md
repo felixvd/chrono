@@ -2,7 +2,7 @@ PyChrono tutorials  {#tutorial_table_of_content_pychrono}
 ==========================
 
 
-This is a collection of tutorials for users that installed the [PyChrono](@ref pychrono_introduction) module.
+This is a collection of tutorials for users that installed the [PyChrono](@ref pychrono_introduction) module. The code for these tutorials can be found [here](https://github.com/projectchrono/chrono/tree/develop/src/demos/python).
 
 We suggest you to **study them in the presented order** of increasing difficulty.
 
